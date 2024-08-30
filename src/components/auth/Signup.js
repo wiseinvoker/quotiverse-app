@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUserAuth } from '../../context/UserAuthContext';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState("");
+  const { signUp } = useUserAuth();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert('Passwords do not match!');
@@ -13,6 +18,12 @@ const Signup = () => {
     }
     // Add signup logic here
     console.log('Email:', email, 'Password:', password);
+    try {
+      await signUp(email, password);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (

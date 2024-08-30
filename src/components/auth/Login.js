@@ -1,13 +1,35 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import GoogleButton from "react-google-button";
+import { useUserAuth } from '../../context/UserAuthContext';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { logIn, googleSignIn } = useUserAuth();
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     // Add login logic here
     console.log('Email:', email, 'Password:', password);
+    try {
+      await logIn(email, password);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleSignIn = async (e) => {
+    e.preventDefault();
+    try {
+      await googleSignIn();
+      navigate("/");
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -83,14 +105,22 @@ const Login = () => {
               Sign in
             </button>
           </div>
-          <p className="mt-2 text-sm text-center text-gray-600">
+          <div className="mt-2 text-sm text-center text-gray-600">
             Or
-            <hr/>
+            <hr />
             <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
               create a new account
             </a>
-          </p>
+          </div>
         </form>
+        <hr />
+        <div>
+          <GoogleButton
+            className="g-btn"
+            type="dark"
+            onClick={handleGoogleSignIn}
+          />
+        </div>
       </div>
     </div>
   );
